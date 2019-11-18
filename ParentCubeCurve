@@ -1,0 +1,18 @@
+from maya import cmds
+
+boxShape = cmds.polyCube ()
+circleShape = cmds.circle ()
+cmds.rotate (90,0,0)
+
+circleShape = circleShape [0]
+boxShape = boxShape [0]
+
+cmds.parent (boxShape, circleShape)
+
+cmds.select(boxShape)
+cmds.setAttr (".translate", lock = True)
+cmds.setAttr (".rotate", lock = True)
+cmds.setAttr (".scale", lock = True)
+
+cmds.select(circleShape)
+cmds.setAttr (".translate", lock = False)
