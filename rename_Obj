@@ -1,0 +1,44 @@
+from maya import cmds
+
+SUFFIXES = {
+	"mesh": "_geo",
+	"joint": "_jnt",
+	"ambientLight": "_lgt",
+	"camera": None
+}
+
+DEFAULT_SUFFIX = "_grp"
+
+def rename(selection=False):
+	global suffix
+	selected = cmds.ls(selection = selection, dag=True, long=True)
+
+	if selection and not selected:
+		raise RuntimeError("You have not selected anything yet!")
+
+	selected.sort(key=len, reverse=True)
+
+	for obj in selected:
+		shortName = obj.split("|")[-1]
+		children = cmds.listRelatives(obj, children=True, fullPath=True) or []
+
+		if len(children) == 1:
+			child = children[0]
+			objType = cmds.objectType(child)
+		else:
+			objType = cmds.objectType(obj)
+
+		suffix = SUFFIXES.get(objType, DEFAULT_SUFFIX)
+
+		if not suffix:
+			continue
+
+# Trying to avoid having digits in previously created suffixes that happened to be duplicated after renaming!
+#		if obj.endswith(suffix+'')
+#			res = ''.join([i for i in obj if not i.isdigit()])
+#			suffix = "final string : ", res
+
+		elif obj.endswith(suffix):
+			continue
+
+		newName = cmds.rename (obj, shortName + suffix)
